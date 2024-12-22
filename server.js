@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 5000;  // Use PORT environment variable
 
 // Middleware
-app.use(cors({ origin: "https://MyBizBrandFrontend.azurewebsites.net" }));
+app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 
 // Azure SQL configuration
