@@ -1,11 +1,13 @@
-const express = import("express");
-const bodyParser = import("body-parser");
-const sql = import("mssql");
-const cors = import("cors");
-import("dotenv").config();
+import express from "express";
+import bodyParser from "body-parser";
+import sql from "mssql";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;  // Use PORT environment variable
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({ origin: "*" }));
@@ -18,8 +20,8 @@ const dbConfig = {
   server: process.env.DB_SERVER,
   database: process.env.DB_DATABASE,
   options: {
-    encrypt: true, // Use encryption for Azure SQL
-    trustServerCertificate: false, // Recommended for production
+    encrypt: true,
+    trustServerCertificate: false,
   },
 };
 
@@ -28,10 +30,8 @@ app.post("/api/mentee-onboarding", async (req, res) => {
   const { jobTitle, verticals, persona, intent } = req.body;
 
   try {
-    // Connect to the database
     const pool = await sql.connect(dbConfig);
 
-    // Insert form data into the database
     await pool.request()
       .input("jobTitle", sql.NVarChar, jobTitle)
       .input("verticals", sql.NVarChar, verticals.join(","))
@@ -47,23 +47,24 @@ app.post("/api/mentee-onboarding", async (req, res) => {
     console.error("Database error:", error);
     res.status(500).send("Failed to submit form data.");
   } finally {
-    sql.close(); // Close the database connection
+    sql.close();
   }
 });
+
 app.get("/submissions", async (req, res) => {
   try {
-      const pool = await sql.connect(dbConfig);
-      const result = await pool
-          .request()
-          .query("SELECT * FROM OnboardingForm");
+    const pool = await sql.connect(dbConfig);
+    const result = await pool
+      .request()
+      .query("SELECT * FROM OnboardingForm");
 
-      res.status(200).json(result.recordset);
+    res.status(200).json(result.recordset);
   } catch (err) {
-      console.error("Error fetching submissions: ", err);
-      res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching submissions: ", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
-// Start the server
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
