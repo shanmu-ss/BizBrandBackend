@@ -1,8 +1,8 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const sql = require("mssql");
-const cors = require("cors");
-require("dotenv").config();
+const express = import("express");
+const bodyParser = import("body-parser");
+const sql = import("mssql");
+const cors = import("cors");
+import("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 5000;  // Use PORT environment variable
